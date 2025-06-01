@@ -1,0 +1,31 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ] || [ -f yarn.lock ]; then
+            npm ci || yarn install --frozen-lockfile
+          else
+            echo "No lockfile found, skipping install."
+          fi
+      - name: Run tests
+        run: |
+          if [ -f package.json ]; then
+            npm test || echo "No test script defined."
+          else
+            echo "No package.json found, skipping tests."
+          fi

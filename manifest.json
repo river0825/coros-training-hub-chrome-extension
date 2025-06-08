@@ -9,8 +9,6 @@
     "storage"
   ],
   "host_permissions": [
-    "https://*.coros.com/*",
-    "https://coros.com/*",
     "https://t.coros.com/*",
     "https://teamapi.coros.com/*"
   ],
@@ -20,8 +18,6 @@
   "content_scripts": [
     {
       "matches": [
-        "https://*.coros.com/*",
-        "https://coros.com/*",
         "https://t.coros.com/*"
       ],
       "js": [
@@ -47,8 +43,7 @@
         "*.css"
       ],
       "matches": [
-        "https://*.coros.com/*",
-        "https://coros.com/*"
+        "https://t.coros.com/*"
       ]
     }
   ]

@@ -43,19 +43,268 @@ window.CorosCalendar = (function () {
         }
 
         try {
+            // Calculate summary stats for cards (reuse logic from statistics.js)
+            const stats = calculateStatisticsForCalendar(activities, date);
+            const groupSummary = groupSummarizeByCodeForCalendar(activities);
+            const summaryCardsHTML = generateSummaryCardsForCalendar(stats.overall, groupSummary);
+
+            let calendarHTML = '';
             if (viewMode === 'week') {
-                renderWeekView(container, date, activities);
+                calendarHTML = renderWeekViewHTML(date, activities);
             } else {
-                renderMonthView(container, date, activities);
+                calendarHTML = renderMonthViewHTML(date, activities);
             }
+
+            container.innerHTML = `
+                <div class="coros-stats-summary" style="margin-bottom: 16px;">${summaryCardsHTML}</div>
+                ${calendarHTML}
+            `;
+
+            // Add event listeners for activity tooltips (after calendar is rendered)
+            addActivityTooltips(container);
         } catch (error) {
             console.error('Error rendering calendar:', error);
             container.innerHTML = `
-          <div class="coros-error-state">
-            <p>Failed to render calendar: ${error.message}</p>
-          </div>
-        `;
+              <div class="coros-error-state">
+                <p>Failed to render calendar: ${error.message}</p>
+              </div>
+            `;
         }
+    }
+
+    // --- Summary Cards Logic (adapted from statistics.js) ---
+    function calculateStatisticsForCalendar(activities, date) {
+        if (!Array.isArray(activities)) {
+            activities = [];
+        }
+
+        const stats = {
+            overall: {
+                totalActivities: 0,
+                activeDays: new Set(),
+                totalDistance: 0,
+                totalDuration: 0,
+                totalCalories: 0
+            }
+        };
+
+        activities.forEach(activity => {
+            try {
+                const normalizedActivity = normalizeActivityForCalendar(activity);
+                const activityDate = new Date(normalizedActivity.startTime);
+                const dateKey = activityDate.toISOString().split('T')[0];
+                stats.overall.totalActivities++;
+                stats.overall.activeDays.add(dateKey);
+                stats.overall.totalDistance += normalizedActivity.distance || 0;
+                stats.overall.totalDuration += normalizedActivity.duration || 0;
+                stats.overall.totalCalories += normalizedActivity.calories || 0;
+            } catch (error) {
+                // skip
+            }
+        });
+        stats.overall.activeDays = stats.overall.activeDays.size;
+        return stats;
+    }
+
+    function groupSummarizeByCodeForCalendar(activities) {
+        const groupSummary = {
+            run: { distance: 0, time: 0, count: 0, days: new Set() },
+            bike: { distance: 0, time: 0, count: 0, days: new Set() },
+            swim: { distance: 0, time: 0, count: 0, days: new Set() }
+        };
+
+        activities.forEach(a => {
+            const code = parseInt(a.code, 10);
+            const day = typeof a.date === 'string' ? a.date.split('T')[0] : a.date;
+            if (code >= 100 && code < 200) {
+                groupSummary.run.distance += a.distance || 0;
+                groupSummary.run.time += parseTimeToSecondsForCalendar(a.duration || 0);
+                groupSummary.run.count += 1;
+                groupSummary.run.days.add(day);
+            } else if (code >= 200 && code < 300) {
+                groupSummary.bike.distance += a.distance || 0;
+                groupSummary.bike.time += parseTimeToSecondsForCalendar(a.duration || 0);
+                groupSummary.bike.count += 1;
+                groupSummary.bike.days.add(day);
+            } else if (code >= 300 && code < 400) {
+                groupSummary.swim.distance += a.distance || 0;
+                groupSummary.swim.time += parseTimeToSecondsForCalendar(a.duration || 0);
+                groupSummary.swim.count += 1;
+                groupSummary.swim.days.add(day);
+            }
+        });
+
+        groupSummary.run.days = groupSummary.run.days.size;
+        groupSummary.bike.days = groupSummary.bike.days.size;
+        groupSummary.swim.days = groupSummary.swim.days.size;
+        return groupSummary;
+    }
+
+    function parseTimeToSecondsForCalendar(timeStr) {
+        if (typeof timeStr === 'number') return timeStr;
+        if (!timeStr) return 0;
+        const parts = timeStr.split(':').map(Number).reverse();
+        let seconds = 0;
+        if (parts[0]) seconds += parts[0];
+        if (parts[1]) seconds += parts[1] * 60;
+        if (parts[2]) seconds += parts[2] * 3600;
+        return seconds;
+    }
+
+    function generateSummaryCardsForCalendar(overallStats, groupSummary) {
+        const groupCards = [
+            {
+                key: 'run',
+                label: 'Run',
+                icon: '🏃',
+                color: '#FF6B6B',
+            },
+            {
+                key: 'bike',
+                label: 'Bike',
+                icon: '🚴',
+                color: '#4ECDC4',
+            },
+            {
+                key: 'swim',
+                label: 'Swim',
+                icon: '🏊',
+                color: '#45B7D1',
+            }
+        ].map(({ key, label, icon, color }) => {
+            const g = groupSummary[key];
+            return `
+                <div class="coros-stat-card group-summary" style="border-top: 3px solid ${color}">
+                  <div class="coros-stat-value">${icon} ${label}</div>
+                  <div class="coros-stat-label">${g.count} activities, ${g.days} days</div>
+                  <div class="coros-stat-detail">${formatDistanceForCalendar(g.distance)}, ${formatDurationForCalendar(g.time)}</div>
+                </div>
+              `;
+        }).join('');
+
+        return `
+            ${groupCards}
+            <div class="coros-stat-card">
+              <div class="coros-stat-value">${overallStats.totalActivities}</div>
+              <div class="coros-stat-label">Total Activities</div>
+            </div>
+            <div class="coros-stat-card">
+              <div class="coros-stat-value">${overallStats.activeDays}</div>
+              <div class="coros-stat-label">Active Days</div>
+            </div>
+            <div class="coros-stat-card">
+              <div class="coros-stat-value">${formatDistanceForCalendar(overallStats.totalDistance)}</div>
+              <div class="coros-stat-label">Total Distance</div>
+            </div>
+            <div class="coros-stat-card">
+              <div class="coros-stat-value">${formatDurationForCalendar(overallStats.totalDuration)}</div>
+              <div class="coros-stat-label">Total Time</div>
+            </div>
+            <div class="coros-stat-card">
+              <div class="coros-stat-value">${formatCaloriesForCalendar(overallStats.totalCalories)}</div>
+              <div class="coros-stat-label">Total Calories</div>
+            </div>
+        `;
+    }
+
+    function formatDistanceForCalendar(meters) {
+        if (!meters || meters < 1) return '0';
+        if (meters >= 1000) {
+            const km = (meters / 1000).toFixed(1);
+            return `${km} km`;
+        } else {
+            return `${Math.round(meters)} m`;
+        }
+    }
+
+    function formatDurationForCalendar(seconds) {
+        if (!seconds || seconds < 1) return '0m';
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        } else {
+            return `${minutes}m`;
+        }
+    }
+
+    function formatCaloriesForCalendar(calories) {
+        if (!calories || calories < 1) return '0';
+        if (calories >= 1000) {
+            return `${(calories / 1000).toFixed(1)}k`;
+        } else {
+            return Math.round(calories).toString();
+        }
+    }
+
+    function normalizeActivityForCalendar(activity) {
+        return {
+            id: activity.id || activity.activityId || Math.random().toString(36),
+            name: activity.name || activity.title || 'Activity',
+            type: normalizeActivityType(activity.type || activity.sport),
+            duration: parseFloat(activity.duration || activity.movingTime || 0),
+            distance: parseFloat(activity.distance || 0),
+            startTime: activity.startTime || activity.date,
+            calories: parseFloat(activity.calories || 0),
+            code: activity.code || activity.sportType || activity.sportCode || undefined,
+            date: activity.date
+        };
+    }
+
+    // --- End summary cards logic ---
+
+    // Helper: renderMonthView and renderWeekView as HTML string (not direct DOM)
+    function renderMonthViewHTML(date, activities) {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const activitiesByDate = processActivitiesByDate(activities);
+        return `
+        <div class="arco-table-container arco-table-has-fixed-col-left arco-table-has-fixed-col-right">
+        <div class="arco-table-content arco-table-content-scroll-x">
+        <table class="arco-table">
+          <thead>
+            <tr class="arco-table-tr">
+              ${WEEKDAYS.map(day =>
+                `<th class="arco-table-th arco-table-col-fixed-left arco-table-col-fixed-left-last td-Name field-Name">${day}</th>`
+            ).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${generateMonthRows(year, month, activitiesByDate)}
+          </tbody>
+        </table>
+        </div>
+        </div>
+      `;
+    }
+
+    function renderWeekViewHTML(date, activities) {
+        const weekStart = getWeekStart(date);
+        const activitiesByDate = processActivitiesByDate(activities);
+        const weekDays = [];
+        for (let i = 0; i < 7; i++) {
+            const day = new Date(weekStart);
+            day.setDate(weekStart.getDate() + i);
+            weekDays.push(day);
+        }
+        return `
+        <table class="arco-table">
+          <thead>
+            <tr class="arco-table-tr">
+              ${WEEKDAYS.map(day =>
+                `<th class="arco-table-th arco-table-col-fixed-left arco-table-col-fixed-left-last td-Name field-Name">${day}</th>`
+            ).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="arco-table-tr">
+              ${weekDays.map(day =>
+                generateDayTd(day, activitiesByDate, false)
+            ).join('')}
+            </tr>
+          </tbody>
+        </table>
+      `;
     }
 
     /**
@@ -242,31 +491,98 @@ window.CorosCalendar = (function () {
             return '';
         }
 
-        const maxVisible = 10;
-        const visibleActivities = activities.slice(0, maxVisible);
-        const hiddenCount = activities.length - maxVisible;
+        // Group activities by type
+        const grouped = {};
+        activities.forEach(activity => {
+            const type = activity.type || 'other';
+            if (!grouped[type]) {
+                grouped[type] = {
+                    ...activity,
+                    count: 0,
+                    totalDistance: 0,
+                    totalDuration: 0
+                };
+            }
+            grouped[type].count += 1;
+            grouped[type].totalDistance += activity.distance || 0;
+            grouped[type].totalDuration += activity.duration || 0;
+        });
 
-        let html = visibleActivities.map(activity => {
-            const sportConfig = SPORT_TYPES[activity.type] || SPORT_TYPES.other;
-            const duration = formatDuration(activity.duration);
-            const distance = formatDistance(activity.distance);
+        const groupedList = Object.values(grouped);
+        // Sort by sport type name for consistency
+        groupedList.sort((a, b) => (a.type > b.type ? 1 : -1));
+
+        let html = groupedList.map(group => {
+            const sportConfig = SPORT_TYPES[group.type] || SPORT_TYPES.other;
+            const distance = formatDistance(group.totalDistance);
+            const duration = formatDuration(group.totalDuration);
+            const countStr = group.count > 1 ? ` x${group.count}` : '';
+            // Show both distance and duration if both exist
+            let details = '';
+            if (distance && duration) {
+                details = `${distance} / ${duration}`;
+            } else if (distance) {
+                details = distance;
+            } else if (duration) {
+                details = duration;
+            }
+
+            // Complete sportIconMap from provided HTML
+            const sportIconMap = {
+                100: { icon: 'icon-outrun', color: 'rgb(248, 192, 50)' },
+                101: { icon: 'icon-indoor_run', color: 'rgb(248, 192, 50)' },
+                102: { icon: 'icon-trailrun', color: 'rgb(248, 192, 50)' },
+                103: { icon: 'icon-groundrun', color: 'rgb(248, 192, 50)' },
+                104: { icon: 'icon-hike', color: 'rgb(250, 225, 60)' },
+                105: { icon: 'icon-climb', color: 'rgb(48, 201, 202)' },
+                200: { icon: 'icon-cycle', color: 'rgb(28, 181, 64)' },
+                201: { icon: 'icon-indoor_bike', color: 'rgb(28, 181, 64)' },
+                202: { icon: 'icon-road-ebike', color: 'rgb(28, 181, 64)' },
+                203: { icon: 'icon-gravel-road-riding', color: 'rgb(28, 181, 64)' },
+                204: { icon: 'icon-mountain-riding', color: 'rgb(28, 181, 64)' },
+                205: { icon: 'icon-mteb', color: 'rgb(28, 181, 64)' },
+                299: { icon: 'icon-cycle', color: 'rgb(28, 181, 64)' },
+                300: { icon: 'icon-poolswim', color: 'rgb(48, 112, 255)' },
+                301: { icon: 'icon-openwater', color: 'rgb(48, 112, 255)' },
+                400: { icon: 'icon-Indoor_erobics', color: 'rgb(217, 46, 218)' },
+                401: { icon: 'icon-outdoor_aerobics', color: 'rgb(217, 46, 218)' },
+                402: { icon: 'icon-strength', color: 'rgb(217, 46, 218)' },
+                800: { icon: 'icon-indoor_climb', color: 'rgb(48, 201, 202)' },
+                801: { icon: 'icon-bouldering_w', color: 'rgb(48, 201, 202)' },
+                900: { icon: 'icon-walk', color: 'rgb(250, 225, 60)' },
+                901: { icon: 'icon-jump', color: 'rgb(217, 46, 218)' },
+                10000: { icon: 'icon-triathlon', color: 'rgb(255, 159, 64)' },
+                10003: { icon: 'icon-PitchClimb', color: 'rgb(48, 201, 202)' },
+                other: { icon: 'icon-other', color: 'rgb(200,200,200)' }
+            };
+            let iconTypeClass = 'icon-other';
+            let iconColor = 'rgb(200,200,200)';
+            let dataSport = '';
+            if (group.code && sportIconMap[group.code]) {
+                iconTypeClass = sportIconMap[group.code].icon;
+                iconColor = sportIconMap[group.code].color;
+                dataSport = group.code;
+            } else {
+                iconTypeClass = sportIconMap.other.icon;
+                iconColor = sportIconMap.other.color;
+                dataSport = '';
+            }
+            // Custom icon HTML
+            const iconHTML = `<span style="width:auto; padding: 4px;" class="arco-table-td-content"><div class="flex-1 flex"><span class="iconfont-sport ${iconTypeClass} text-20" data-sport="${dataSport}" style="color: ${iconColor};"></span></div></span>`;
 
             return `
           <div class="coros-activity-item" 
-               data-activity-id="${activity.id}"
-               data-sport-type="${activity.code || 'other'}"
-               style="background-color: ${sportConfig.color}20; border-left: 3px solid ${sportConfig.color}">
-            <span class="coros-activity-icon">${sportConfig.icon}</span>
-            <span class="coros-activity-details">
-              ${distance ? `${distance}` : duration}
+               data-activity-id="${group.id}"
+               data-sport-type="${group.code || 'other'}"
+               style="background-color: ${sportConfig.color}20; border-left: 3px solid ${sportConfig.color}; display: flex; align-items: center;">
+            ${iconHTML}
+            ${countStr}
+            <span class="coros-activity-details" style="margin-left: 4px;">
+              ${details}
             </span>
           </div>
         `;
         }).join('');
-
-        if (hiddenCount > 0) {
-            html += `<div class="coros-activity-more">+${hiddenCount} more</div>`;
-        }
 
         return html;
     }
@@ -313,7 +629,7 @@ window.CorosCalendar = (function () {
         const sportType = event.currentTarget.dataset.sportType || 'other';
         // Navigate to activity details or open in new tab
         if (activityId) {
-            // https://t.coros.com/activity-detail?labelId=469565692620865562&sportType=301
+            // when clicked, open the activity details page
             const activityUrl = `https://t.coros.com/activity-detail?labelId=${activityId}&sportType=${sportType}`;
             window.open(activityUrl, '_blank');
         }

@@ -133,21 +133,23 @@ window.CorosStatistics = (function () {
 
     activities.forEach(a => {
       const code = parseInt(a.code, 10);
+      // Extract 'yyyy-mm-dd' from a.date (which may be '2025-04-30T13:05:01.000Z')
+      const day = typeof a.date === 'string' ? a.date.split('T')[0] : a.date;
       if (code >= 100 && code < 200) {
         groupSummary.run.distance += a.distance || 0;
-        groupSummary.run.time += parseTimeToSeconds(a.time || 0);
+        groupSummary.run.time += parseTimeToSeconds(a.duration || 0);
         groupSummary.run.count += 1;
-        groupSummary.run.days.add(a.date);
+        groupSummary.run.days.add(day);
       } else if (code >= 200 && code < 300) {
         groupSummary.bike.distance += a.distance || 0;
-        groupSummary.bike.time += parseTimeToSeconds(a.time || 0);
+        groupSummary.bike.time += parseTimeToSeconds(a.duration || 0);
         groupSummary.bike.count += 1;
-        groupSummary.bike.days.add(a.date);
+        groupSummary.bike.days.add(day);
       } else if (code >= 300 && code < 400) {
         groupSummary.swim.distance += a.distance || 0;
-        groupSummary.swim.time += parseTimeToSeconds(a.time || 0);
+        groupSummary.swim.time += parseTimeToSeconds(a.duration || 0);
         groupSummary.swim.count += 1;
-        groupSummary.swim.days.add(a.date);
+        groupSummary.swim.days.add(day);
       }
     });
 

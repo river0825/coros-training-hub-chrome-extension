@@ -63,7 +63,7 @@
 
     // admin/views/activities
     return (hostname.includes('coros.com') || hostname.includes('t.coros.com')) && (
-      pathname.includes('activities') ||
+      pathname.includes('admin/views') ||
       pathname.includes('training') ||
       pathname.includes('dashboard') ||
       pathname.includes('profile') ||
@@ -207,6 +207,26 @@
 
     extensionState.currentDate = currentDate;
     loadMonthData(currentDate.getFullYear(), currentDate.getMonth());
+
+    // Set the date range inputs (begin and end of month)
+    setTimeout(() => {
+      // Find the inputs inside .arco-picker-range
+      const picker = document.querySelector('div.arco-picker-range');
+      if (picker) {
+        const inputs = picker.querySelectorAll('input');
+        if (inputs.length >= 2) {
+          const yyyy = currentDate.getFullYear();
+          const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+          const days = new Date(yyyy, currentDate.getMonth() + 1, 0).getDate();
+          inputs[0].value = `${yyyy}/${mm}/01`;
+          inputs[1].value = `${yyyy}/${mm}/${String(days).padStart(2, '0')}`;
+          // Trigger input event if needed
+          // const event = new Event('input', { bubbles: true });
+          // inputs[0].dispatchEvent(event);
+          // inputs[1].dispatchEvent(event);
+        }
+      }
+    }, 100);
   }
 
   // Handle view mode change (month/week)

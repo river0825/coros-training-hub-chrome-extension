@@ -178,6 +178,7 @@
     background: var(--coros-bg-primary, #ffffff);
     transition: background-color 0.2s ease;
     vertical-align: top;
+    overflow: visible;
   }
   
   .coros-calendar-day:hover {
@@ -194,9 +195,17 @@
   }
   
   .coros-day-number {
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 13px;
+    font-weight: 600;
     margin-bottom: 4px;
+    color: var(--coros-text-secondary, #b0b0b0);
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    background: transparent;
+    pointer-events: none;
+    letter-spacing: 0.2px;
   }
   
   .coros-day-activities {
@@ -204,22 +213,23 @@
     flex-direction: column;
     gap: 6px;
     min-height: 32px;
+    margin-top: 26px; /* Add space for the day number */
     /* Remove max-height and overflow to allow expansion */
   }
   
   .coros-activity-item {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 8px;
+    align-items: flex-start;
+    gap: 0px;
+    padding: 0px 8px;
     border-radius: 8px;
     font-size: 12px;
-    line-height: 1.3;
+    line-height: 1.6;
     background: var(--coros-bg-secondary, #f8f9fa);
     color: var(--coros-text-primary, #333333);
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
     border: 1px solid var(--coros-border, #e0e0e0);
-    margin-bottom: 2px;
+    margin-bottom: 0px;
     transition: box-shadow 0.2s;
   }
   .coros-activity-item:last-child {

@@ -402,14 +402,17 @@ window.CorosAPI = (function () {
     function mapCorosSportType(sportType) {
         const sportTypeMap = {
             100: 'running',        // 跑步
-            103: 'running',        // 田徑
+            101: 'track-1',        // 田徑
+            102: 'track-2',        // 田徑
+            103: 'track-3',        // 田徑
+            104: 'walking',        // 步行
             200: 'cycling',        // 自行車
             201: 'indoor_cycling', // 室內自行車
             300: 'swimming',       // 泳池游泳
-            301: 'swimming',       // 開放水域
-            400: 'other',          // 有氧
+            301: 'openwater',       // 開放水域
+            400: 'aerobic',         // 有氧
             402: 'strength',       // 力量訓練
-            10000: 'other',        // 鐵人三項
+            10000: 'triathlon',        // 鐵人三項
             // Add more mappings as needed
         };
 
@@ -521,4 +524,3 @@ window.CorosAPI = (function () {
     };
 
 })();
-  

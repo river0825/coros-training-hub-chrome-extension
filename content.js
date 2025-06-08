@@ -435,10 +435,11 @@
           // Monthly report
           const report = {};
           // Summary by group: run, bike, swim
+          // Add Sets to track unique days for each group
           const groupSummary = {
-            run: { distance: 0, time: 0, count: 0 },
-            bike: { distance: 0, time: 0, count: 0 },
-            swim: { distance: 0, time: 0, count: 0 }
+            run: { distance: 0, time: 0, count: 0, days: new Set() },
+            bike: { distance: 0, time: 0, count: 0, days: new Set() },
+            swim: { distance: 0, time: 0, count: 0, days: new Set() }
           };
           function parseTimeToSeconds(t) {
             if (typeof t === 'number') return t;
@@ -466,14 +467,17 @@
               groupSummary.run.distance += a.distance || 0;
               groupSummary.run.time += parseTimeToSeconds(a.time || 0);
               groupSummary.run.count += 1;
+              groupSummary.run.days.add(a.date);
             } else if (code >= 200 && code < 300) {
               groupSummary.bike.distance += a.distance || 0;
               groupSummary.bike.time += parseTimeToSeconds(a.time || 0);
               groupSummary.bike.count += 1;
+              groupSummary.bike.days.add(a.date);
             } else if (code >= 300 && code < 400) {
               groupSummary.swim.distance += a.distance || 0;
               groupSummary.swim.time += parseTimeToSeconds(a.time || 0);
               groupSummary.swim.count += 1;
+              groupSummary.swim.days.add(a.date);
             }
           });
           function formatTime(sec) {
@@ -488,11 +492,11 @@
         <table class="coros-calendar-report-table" style="margin-bottom:12px;">
           <tr>
             <td>${getSportIcon(100)}</td>
-            <td>跑步 ${groupSummary.run.distance.toFixed(2)} km ${formatTime(groupSummary.run.time)}</td>
+            <td>跑步 [${groupSummary.run.count} 次 / ${groupSummary.run.days.size} 天] ${groupSummary.run.distance.toFixed(2)} km / ${formatTime(groupSummary.run.time)}</td>
             <td>${getSportIcon(200)}</td>
-            <td>自行車 ${groupSummary.bike.distance.toFixed(2)} km ${formatTime(groupSummary.bike.time)}</td>
+            <td>自行車 [${groupSummary.bike.count} 次 / ${groupSummary.bike.days.size} 天] ${groupSummary.bike.distance.toFixed(2)} km / ${formatTime(groupSummary.bike.time)}</td>
             <td>${getSportIcon(300)}</td>
-            <td>游泳 ${groupSummary.swim.distance.toFixed(2)} km ${formatTime(groupSummary.swim.time)}</td>
+            <td>游泳 [${groupSummary.swim.count} 次 / ${groupSummary.swim.days.size} 天] ${groupSummary.swim.distance.toFixed(2)} km / ${formatTime(groupSummary.swim.time)}</td>
           </tr>
         </table>
         `;

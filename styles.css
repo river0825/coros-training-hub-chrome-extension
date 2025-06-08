@@ -1,0 +1,445 @@
+/* COROS Calendar Extension Styles */
+
+/* Main extension container */
+.coros-extension-container {
+    background: var(--coros-bg-primary, #ffffff);
+    border: 1px solid var(--coros-border, #e0e0e0);
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--coros-text-primary, #333333);
+    position: relative;
+  }
+  
+  /* Dark theme support */
+  @media (prefers-color-scheme: dark) {
+    .coros-extension-container {
+      --coros-bg-primary: #1a1a1a;
+      --coros-bg-secondary: #2d2d2d;
+      --coros-border: #404040;
+      --coros-text-primary: #ffffff;
+      --coros-text-secondary: #cccccc;
+      --coros-accent: #007AFF;
+    }
+  }
+  
+  /* Tab navigation */
+  .coros-extension-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+    background: var(--coros-bg-secondary, #f8f9fa);
+  }
+  
+  .coros-tab-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--coros-text-secondary, #666666);
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .coros-tab-btn:hover {
+    background: var(--coros-bg-primary, #ffffff);
+    color: var(--coros-text-primary, #333333);
+  }
+  
+  .coros-tab-btn.active {
+    background: var(--coros-bg-primary, #ffffff);
+    color: var(--coros-accent, #007AFF);
+    border-bottom-color: var(--coros-accent, #007AFF);
+  }
+  
+  /* Content container */
+  .coros-extension-content {
+    padding: 20px;
+    min-height: 400px;
+  }
+  
+  /* Loading state */
+  .coros-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  
+  .coros-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--coros-border, #e0e0e0);
+    border-top: 4px solid var(--coros-accent, #007AFF);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Calendar header */
+  .coros-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .coros-calendar-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .coros-calendar-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--coros-text-primary, #333333);
+  }
+  
+  .coros-calendar-nav {
+    padding: 8px 12px;
+    border: 1px solid var(--coros-border, #e0e0e0);
+    background: var(--coros-bg-primary, #ffffff);
+    color: var(--coros-text-primary, #333333);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+  
+  .coros-calendar-nav:hover {
+    background: var(--coros-accent, #007AFF);
+    color: white;
+    border-color: var(--coros-accent, #007AFF);
+  }
+  
+  .coros-view-controls select {
+    padding: 8px 12px;
+    border: 1px solid var(--coros-border, #e0e0e0);
+    background: var(--coros-bg-primary, #ffffff);
+    color: var(--coros-text-primary, #333333);
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* Calendar grid */
+  .coros-calendar-grid {
+    background: var(--coros-bg-primary, #ffffff);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--coros-border, #e0e0e0);
+  }
+  
+  .coros-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--coros-bg-secondary, #f8f9fa);
+  }
+  
+  .coros-weekday {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--coros-text-secondary, #666666);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .coros-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+  
+  .coros-calendar-day {
+    min-height: 80px;
+    padding: 8px 4px 8px 4px;
+    border-right: 1px solid var(--coros-border, #e0e0e0);
+    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+    position: relative;
+    background: var(--coros-bg-primary, #ffffff);
+    transition: background-color 0.2s ease;
+    vertical-align: top;
+  }
+  
+  .coros-calendar-day:hover {
+    background: var(--coros-bg-secondary, #f8f9fa);
+  }
+  
+  .coros-calendar-day.other-month {
+    color: var(--coros-text-secondary, #999999);
+    background: var(--coros-bg-secondary, #f8f9fa);
+  }
+  
+  .coros-calendar-day.today {
+    background: rgba(0, 122, 255, 0.1);
+  }
+  
+  .coros-day-number {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .coros-day-activities {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 32px;
+    /* Remove max-height and overflow to allow expansion */
+  }
+  
+  .coros-activity-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.3;
+    background: var(--coros-bg-secondary, #f8f9fa);
+    color: var(--coros-text-primary, #333333);
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+    border: 1px solid var(--coros-border, #e0e0e0);
+    margin-bottom: 2px;
+    transition: box-shadow 0.2s;
+  }
+  .coros-activity-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .coros-activity-icon {
+    font-size: 12px;
+  }
+  
+  .coros-activity-more {
+    font-size: 10px;
+    color: var(--coros-text-secondary, #666666);
+    text-align: center;
+    margin-top: 2px;
+  }
+  
+  /* Statistics styles */
+  .coros-statistics-header {
+    margin-bottom: 20px;
+  }
+  
+  .coros-statistics-content {
+    display: grid;
+    gap: 20px;
+  }
+  
+  .coros-stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .coros-stat-card {
+    background: var(--coros-bg-secondary, #f8f9fa);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--coros-border, #e0e0e0);
+    text-align: center;
+  }
+  
+  .coros-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--coros-accent, #007AFF);
+    margin-bottom: 5px;
+  }
+  
+  .coros-stat-label {
+    font-size: 14px;
+    color: var(--coros-text-secondary, #666666);
+    font-weight: 500;
+  }
+  
+  .coros-stats-by-sport {
+    background: var(--coros-bg-primary, #ffffff);
+    border: 1px solid var(--coros-border, #e0e0e0);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .coros-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .coros-stats-table th {
+    background: var(--coros-bg-secondary, #f8f9fa);
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--coros-text-primary, #333333);
+    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+  }
+  
+  .coros-stats-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+    font-size: 14px;
+  }
+  
+  .coros-sport-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  
+  .coros-sport-icon {
+    font-size: 16px;
+  }
+  
+  /* Error state */
+  .coros-error-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--coros-text-secondary, #666666);
+  }
+  
+  .coros-error-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+  
+  .coros-error-state h3 {
+    margin: 0 0 10px 0;
+    color: var(--coros-text-primary, #333333);
+  }
+  
+  .coros-error-state p {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+  }
+  
+  .coros-retry-btn {
+    padding: 10px 20px;
+    background: var(--coros-accent, #007AFF);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .coros-retry-btn:hover {
+    background: #0056b3;
+  }
+  
+  /* Week view specific styles */
+  .coros-calendar-grid.week-view .coros-calendar-days {
+    grid-template-columns: repeat(7, 1fr);
+  }
+  
+  .coros-calendar-grid.week-view .coros-calendar-day {
+    min-height: 120px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .coros-extension-content {
+      padding: 15px;
+    }
+    
+    .coros-calendar-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .coros-calendar-controls {
+      justify-content: center;
+    }
+    
+    .coros-stats-summary {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    
+    .coros-calendar-day {
+      min-height: 60px;
+    }
+    
+    .coros-stats-table {
+      font-size: 12px;
+    }
+    
+    .coros-stats-table th,
+    .coros-stats-table td {
+      padding: 8px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .coros-extension-tabs {
+      flex-direction: column;
+    }
+    
+    .coros-tab-btn {
+      border-bottom: 1px solid var(--coros-border, #e0e0e0);
+      border-left: 3px solid transparent;
+    }
+    
+    .coros-tab-btn.active {
+      border-left-color: var(--coros-accent, #007AFF);
+      border-bottom-color: var(--coros-border, #e0e0e0);
+    }
+    
+    .coros-stats-summary {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .coros-extension-container {
+      border-width: 2px;
+    }
+    
+    .coros-calendar-day {
+      border-width: 2px;
+    }
+    
+    .coros-tab-btn.active {
+      border-bottom-width: 4px;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .coros-tab-btn,
+    .coros-calendar-nav,
+    .coros-calendar-day,
+    .coros-retry-btn {
+      transition: none;
+    }
+    
+    .coros-spinner {
+      animation: none;
+    }
+  }
+  

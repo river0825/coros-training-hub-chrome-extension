@@ -1,14 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "COROS Training Hub Calendar Summary",
-  "version": "0.1.0",
-  "description": "Summarizes COROS activities in a calendar popup.",
+  "name": "COROS Activity Calendar",
+  "version": "1.0.0",
+  "description": "Enhance COROS website with calendar visualization and statistics for sports activity data",
   "permissions": [
+    "activeTab",
     "scripting",
-    "activeTab"
+    "storage"
   ],
   "host_permissions": [
-    "https://t.coros.com/"
+    "https://*.coros.com/*",
+    "https://coros.com/*",
+    "https://t.coros.com/*",
+    "https://teamapi.coros.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -16,21 +20,36 @@
   "content_scripts": [
     {
       "matches": [
+        "https://*.coros.com/*",
+        "https://coros.com/*",
         "https://t.coros.com/*"
       ],
       "js": [
-        "jquery.min.js",
+        "storage.js",
+        "api.js",
+        "calendar.js",
+        "statistics.js",
         "content.js"
+      ],
+      "css": [
+        "styles.css"
       ]
     }
   ],
   "action": {
-    "_default_popup": "popup/popup.html",
-    "_default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+    "default_popup": "popup.html",
+    "default_title": "COROS Activity Calendar"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*.js",
+        "*.css"
+      ],
+      "matches": [
+        "https://*.coros.com/*",
+        "https://coros.com/*"
+      ]
     }
-  }
+  ]
 }

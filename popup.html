@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COROS Activity Calendar</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .logo {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 8px 0;
+      color: #333;
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin: 0;
+    }
+    
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+    
+    .status.active {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .status.inactive {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .instructions {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 16px;
+    }
+    
+    .instructions h3 {
+      margin: 0 0 12px 0;
+      font-size: 16px;
+      color: #333;
+    }
+    
+    .instructions ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #555;
+    }
+    
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #999;
+      margin-top: 16px;
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      background: #007AFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    
+    .btn:hover {
+      background: #0056b3;
+    }
+    
+    .btn.secondary {
+      background: #f8f9fa;
+      color: #333;
+      border: 1px solid #dee2e6;
+    }
+    
+    .btn.secondary:hover {
+      background: #e9ecef;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">📅</div>
+    <h1>COROS Activity Calendar</h1>
+    <p class="subtitle">Enhanced sports activity visualization</p>
+  </div>
+
+  <div id="status" class="status inactive">
+    Extension is ready to use on COROS website
+  </div>
+
+  <div class="instructions">
+    <h3>How to Use:</h3>
+    <ol>
+      <li>Navigate to <strong>t.coros.com</strong> or any COROS website</li>
+      <li>Log in to your COROS account</li>
+      <li>The extension will automatically inject a calendar interface</li>
+      <li>Switch between Calendar and Statistics views</li>
+      <li>Navigate months to see your activity history</li>
+    </ol>
+  </div>
+
+  <a href="https://t.coros.com" target="_blank" class="btn">
+    Open COROS Website
+  </a>
+
+  <button id="refreshBtn" class="btn secondary">
+    Refresh Extension
+  </button>
+
+  <div class="footer">
+    <p>Version 1.0.0</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

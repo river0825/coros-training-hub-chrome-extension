@@ -1,34 +1,49 @@
+:root {
+  /* Color Palette from STYLE_GUIDE.md */
+  --c-background-primary: #0f1528;
+  --c-background-card: #181e30;
+  --c-background-inset: #161b2b;
+  --c-accent-primary: #00b3ff;
+  --c-accent-secondary: #f8283b;
+  --c-text-primary: #ffffff;
+  --c-text-secondary: rgba(255, 255, 255, 0.6);
+  --c-text-muted: rgba(255, 255, 255, 0.4);
+  --c-border-primary: rgba(255, 255, 255, 0.1);
+  --c-border-secondary: rgba(255, 255, 255, 0.05);
+
+  /* Sizing and Spacing from STYLE_GUIDE.md */
+  --spacing-unit: 4px;
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+}
+
+/* Global Styles */
+html, body {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 /* COROS Calendar Extension Styles */
 
 /* Main extension container */
 .coros-extension-container {
-    background: var(--coros-bg-primary, #ffffff);
-    border: 1px solid var(--coros-border, #e0e0e0);
-    border-radius: 8px;
-    margin: 20px 0;
+    background: var(--c-background-primary);
+    border: 1px solid var(--c-border-secondary);
+    border-radius: var(--border-radius-md);
+    margin: 0px 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    color: var(--coros-text-primary, #333333);
+    color: var(--c-text-primary);
     position: relative;
   }
   
   /* Dark theme support */
-  @media (prefers-color-scheme: dark) {
-    .coros-extension-container {
-      --coros-bg-primary: #1a1a1a;
-      --coros-bg-secondary: #2d2d2d;
-      --coros-border: #404040;
-      --coros-text-primary: #ffffff;
-      --coros-text-secondary: #cccccc;
-      --coros-accent: #007AFF;
-    }
-  }
   
   /* Tab navigation */
   .coros-extension-tabs {
     display: flex;
-    border-bottom: 1px solid var(--coros-border, #e0e0e0);
-    background: var(--coros-bg-secondary, #f8f9fa);
+    border-bottom: 1px solid var(--c-border-primary);
+    background: var(--c-background-card);
   }
   
   .coros-tab-btn {
@@ -39,20 +54,20 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    color: var(--coros-text-secondary, #666666);
+    color: var(--c-text-secondary);
     transition: all 0.2s ease;
     border-bottom: 3px solid transparent;
   }
   
   .coros-tab-btn:hover {
-    background: var(--coros-bg-primary, #ffffff);
-    color: var(--coros-text-primary, #333333);
+    background: var(--c-background-primary);
+    color: var(--c-text-primary);
   }
   
   .coros-tab-btn.active {
-    background: var(--coros-bg-primary, #ffffff);
-    color: var(--coros-accent, #007AFF);
-    border-bottom-color: var(--coros-accent, #007AFF);
+    background: var(--c-background-primary);
+    color: var(--c-accent-primary);
+    border-bottom-color: var(--c-accent-primary);
   }
   
   /* Content container */
@@ -68,7 +83,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(15, 21, 40, 0.9);
     display: none;
     flex-direction: column;
     align-items: center;
@@ -79,11 +94,11 @@
   .coros-spinner {
     width: 40px;
     height: 40px;
-    border: 4px solid var(--coros-border, #e0e0e0);
-    border-top: 4px solid var(--coros-accent, #007AFF);
+    border: 4px solid var(--c-border-primary);
+    border-top: 4px solid var(--c-accent-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 10px;
+    margin-bottom: calc(var(--spacing-unit) * 2.5);
   }
   
   @keyframes spin {
@@ -109,49 +124,49 @@
   
   .coros-calendar-title {
     margin: 0;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--coros-text-primary, #333333);
+    font-size: 20px; /* H1 equivalent */
+    font-weight: 500;
+    color: var(--c-text-primary);
   }
   
   .coros-calendar-nav {
     padding: 8px 12px;
-    border: 1px solid var(--coros-border, #e0e0e0);
-    background: var(--coros-bg-primary, #ffffff);
-    color: var(--coros-text-primary, #333333);
-    border-radius: 4px;
+    border: 1px solid var(--c-border-primary);
+    background: var(--c-background-primary);
+    color: var(--c-text-primary);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 14px;
   }
   
   .coros-calendar-nav:hover {
-    background: var(--coros-accent, #007AFF);
-    color: white;
-    border-color: var(--coros-accent, #007AFF);
+    background: var(--c-accent-primary);
+    color: white; /* Style guide doesn't specify text color on hover, assuming white for now */
+    border-color: var(--c-accent-primary);
   }
   
   .coros-view-controls select {
     padding: 8px 12px;
-    border: 1px solid var(--coros-border, #e0e0e0);
-    background: var(--coros-bg-primary, #ffffff);
-    color: var(--coros-text-primary, #333333);
-    border-radius: 4px;
+    border: 1px solid var(--c-border-primary);
+    background: var(--c-background-primary);
+    color: var(--c-text-primary);
+    border-radius: var(--border-radius-md);
     font-size: 14px;
   }
   
   /* Calendar grid */
   .coros-calendar-grid {
-    background: var(--coros-bg-primary, #ffffff);
-    border-radius: 8px;
+    background: var(--c-background-primary);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
-    border: 1px solid var(--coros-border, #e0e0e0);
+    border: 1px solid var(--c-border-secondary);
   }
   
   .coros-calendar-weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    background: var(--coros-bg-secondary, #f8f9fa);
+    background: var(--c-background-card);
   }
   
   .coros-weekday {
@@ -159,7 +174,7 @@
     text-align: center;
     font-weight: 600;
     font-size: 12px;
-    color: var(--coros-text-secondary, #666666);
+    color: var(--c-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -172,22 +187,22 @@
   .coros-calendar-day {
     min-height: 80px;
     padding: 8px 4px 8px 4px;
-    border-right: 1px solid var(--coros-border, #e0e0e0);
-    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+    border-right: 1px solid var(--c-border-secondary);
+    border-bottom: 1px solid var(--c-border-secondary);
     position: relative;
-    background: var(--coros-bg-primary, #ffffff);
+    background: var(--c-background-primary);
     transition: background-color 0.2s ease;
     vertical-align: top;
     overflow: visible;
   }
   
   .coros-calendar-day:hover {
-    background: var(--coros-bg-secondary, #f8f9fa);
+    background: var(--c-background-card);
   }
   
   .coros-calendar-day.other-month {
-    color: var(--coros-text-secondary, #999999);
-    background: var(--coros-bg-secondary, #f8f9fa);
+    color: var(--c-text-secondary); /* Muted text for other month days might be better, but style guide says secondary text. */
+    background: var(--c-background-card);
   }
   
   .coros-calendar-day.today {
@@ -198,7 +213,7 @@
     font-size: 13px;
     font-weight: 600;
     margin-bottom: 4px;
-    color: var(--coros-text-secondary, #b0b0b0);
+    color: var(--c-text-secondary);
     position: absolute;
     top: 8px;
     left: 8px;
@@ -221,12 +236,12 @@
     display: flex;
     align-items: flex-start;
     gap: 0px;
-    padding: 0px 8px;
-    border-radius: 8px;
-    font-size: 12px;
+    padding: 2px 2px; /* Vertical padding of 12px (spacing-unit * 3) */
+    border-radius: var(--border-radius-md);
+    font-size: 12px; /* Keep 12px as it's for activity items, not base font size */
     line-height: 1.6;
-    background: var(--coros-bg-secondary, #f8f9fa);
-    color: var(--coros-text-primary, #333333);
+    background: var(--c-background-card);
+    color: var(--c-text-primary);
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
     border: 1px solid var(--coros-border, #e0e0e0);
     margin-bottom: 0px;
@@ -237,12 +252,12 @@
   }
   
   .coros-activity-icon {
-    font-size: 12px;
+    font-size: 16px; /* Recommended icon size */
   }
   
   .coros-activity-more {
     font-size: 10px;
-    color: var(--coros-text-secondary, #666666);
+    color: var(--c-text-secondary);
     text-align: center;
     margin-top: 2px;
   }
@@ -265,30 +280,30 @@
   }
   
   .coros-stat-card {
-    background: var(--coros-bg-secondary, #f8f9fa);
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid var(--coros-border, #e0e0e0);
+    background: var(--c-background-card);
+    padding: 5px;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--c-border-secondary);
     text-align: center;
   }
   
   .coros-stat-value {
     font-size: 24px;
     font-weight: 700;
-    color: var(--coros-accent, #007AFF);
+    color: var(--c-accent-primary);
     margin-bottom: 5px;
   }
   
   .coros-stat-label {
     font-size: 14px;
-    color: var(--coros-text-secondary, #666666);
+    color: var(--c-text-secondary);
     font-weight: 500;
   }
   
   .coros-stats-by-sport {
-    background: var(--coros-bg-primary, #ffffff);
-    border: 1px solid var(--coros-border, #e0e0e0);
-    border-radius: 8px;
+    background: var(--c-background-primary);
+    border: 1px solid var(--c-border-primary);
+    border-radius: var(--border-radius-md);
     overflow: hidden;
   }
   
@@ -298,18 +313,18 @@
   }
   
   .coros-stats-table th {
-    background: var(--coros-bg-secondary, #f8f9fa);
+    background: var(--c-background-card);
     padding: 12px;
     text-align: left;
     font-weight: 600;
     font-size: 14px;
-    color: var(--coros-text-primary, #333333);
-    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+    color: var(--c-text-primary);
+    border-bottom: 1px solid var(--c-border-primary);
   }
   
   .coros-stats-table td {
     padding: 12px;
-    border-bottom: 1px solid var(--coros-border, #e0e0e0);
+    border-bottom: 1px solid var(--c-border-primary);
     font-size: 14px;
   }
   
@@ -328,7 +343,7 @@
   .coros-error-state {
     text-align: center;
     padding: 40px;
-    color: var(--coros-text-secondary, #666666);
+    color: var(--c-text-secondary);
   }
   
   .coros-error-icon {
@@ -338,7 +353,9 @@
   
   .coros-error-state h3 {
     margin: 0 0 10px 0;
-    color: var(--coros-text-primary, #333333);
+    color: var(--c-text-primary);
+    font-size: 18px; /* H2 equivalent */
+    font-weight: 500;
   }
   
   .coros-error-state p {
@@ -348,10 +365,10 @@
   
   .coros-retry-btn {
     padding: 10px 20px;
-    background: var(--coros-accent, #007AFF);
+    background: var(--c-accent-primary);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius-md);
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
@@ -359,7 +376,7 @@
   }
   
   .coros-retry-btn:hover {
-    background: #0056b3;
+    filter: brightness(1.1); /* Lighten slightly on hover for primary accent */
   }
   
   /* Week view specific styles */
@@ -410,13 +427,13 @@
     }
     
     .coros-tab-btn {
-      border-bottom: 1px solid var(--coros-border, #e0e0e0);
+      border-bottom: 1px solid var(--c-border-primary);
       border-left: 3px solid transparent;
     }
     
     .coros-tab-btn.active {
-      border-left-color: var(--coros-accent, #007AFF);
-      border-bottom-color: var(--coros-border, #e0e0e0);
+      border-left-color: var(--c-accent-primary);
+      border-bottom-color: var(--c-border-primary);
     }
     
     .coros-stats-summary {
@@ -452,4 +469,26 @@
       animation: none;
     }
   }
+
+.coros-extension-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--c-background-inset); /* Use inset background for header */
+  border-bottom: 1px solid var(--c-border-primary);
+}
+
+.coros-collapse-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  line-height: 1;
+}
+
+.coros-extension-container.collapsed  {
+  display: none;
+}
   

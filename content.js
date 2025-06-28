@@ -55,6 +55,29 @@
     }
   }
 
+  // Create the collapse button
+  function createCollapseButton() {
+    const collapseButton = document.createElement('button');
+    collapseButton.id = 'coros-calendar-collapse-btn';
+    collapseButton.className = 'coros-collapse-btn';
+    collapseButton.innerHTML = '🔼'; // Initial icon
+    return collapseButton;
+  }
+
+  // Handle collapse toggle
+  function handleCollapseToggle() {
+    const extensionContainer = document.getElementById('coros-calendar-extension');
+    const collapseButton = document.getElementById('coros-calendar-collapse-btn');
+
+    if (extensionContainer.classList.contains('collapsed')) {
+      extensionContainer.classList.remove('collapsed');
+      collapseButton.innerHTML = '🔼';
+    } else {
+      extensionContainer.classList.add('collapsed');
+      collapseButton.innerHTML = '🔽';
+    }
+  }
+
   // Check if current page is suitable for our extension
   function isCorosActivityPage() {
     const url = window.location.href;
@@ -92,15 +115,18 @@
     extensionContainer.id = 'coros-calendar-extension';
     extensionContainer.className = 'coros-extension-container';
 
+    // Create collapse button
+    const collapseButton = createCollapseButton();
+
     // Create tab navigation
     const tabContainer = document.createElement('div');
     tabContainer.className = 'coros-extension-tabs';
     tabContainer.innerHTML = `
       <button class="coros-tab-btn active" data-tab="calendar">
-        📅 Calendar Overview
+        Calendar
       </button>
       <button class="coros-tab-btn" data-tab="statistics">
-        📊 Statistics
+        Statistics
       </button>
     `;
 
@@ -118,9 +144,20 @@
     `;
 
     // Assemble UI
-    extensionContainer.appendChild(tabContainer);
+    const headerContainer = document.createElement('div');
+    headerContainer.className = 'coros-extension-header';
+    headerContainer.appendChild(tabContainer);
+
+    extensionContainer.appendChild(headerContainer);
     extensionContainer.appendChild(contentContainer);
     extensionContainer.appendChild(loadingIndicator);
+
+    // Try to find the specific element for injection and log if found
+    const specialSelector = "#app > div.layout.flex.bg-bg-1.app-container > div.layout-right.overflow-y-auto.overflow-x-hidden.flex.relative.w-full.relative > div.flex.flex-row.personal.w-full > div.flex.flex-col.flex-1.items-stretch.overflow-x-auto > div.border-b.personal-tab-header.border-border-1.bg-bg-2.flex.justify-between.items-stretch > div.pr-20.flex-1.flex.items-center.justify-end > div";
+    const specialElement = document.querySelector(specialSelector);
+    if (specialElement) {
+      specialElement.parentNode.insertBefore(collapseButton, specialElement.nextSibling);
+    }
 
     // Inject into page
     container.insertBefore(extensionContainer, container.firstChild);
@@ -174,6 +211,13 @@
     document.addEventListener('change', (e) => {
       if (e.target.id === 'coros-view-mode') {
         handleViewModeChange(e.target.value);
+      }
+    });
+
+    // Collapse button
+    document.addEventListener('click', (e) => {
+      if (e.target.id === 'coros-calendar-collapse-btn') {
+        handleCollapseToggle();
       }
     });
   }

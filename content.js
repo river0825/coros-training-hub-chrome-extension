@@ -426,6 +426,7 @@
 
   // Get month key for storage
   function getMonthKey(date) {
+    console.log(`Getting month key for date: ${date}`);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
   }
 

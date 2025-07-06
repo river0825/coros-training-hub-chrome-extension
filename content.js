@@ -193,17 +193,25 @@
 
   // Bind event listeners
   function bindEventListeners() {
-    // Tab switching
+    // Consolidated click event listener
     document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('coros-tab-btn')) {
-        handleTabSwitch(e.target.dataset.tab);
-      }
-    });
+      const target = e.target;
 
-    // Calendar navigation
-    document.addEventListener('click', (e) => {
-      if (e.target.classList.contains('coros-calendar-nav')) {
-        handleCalendarNavigation(e.target.dataset.action);
+      // Refresh button (most specific check first)
+      if (target.id === 'coros-refresh-btn') {
+        handleRefreshData();
+      }
+      // Tab switching
+      else if (target.classList.contains('coros-tab-btn')) {
+        handleTabSwitch(target.dataset.tab);
+      }
+      // Calendar navigation (prev/next)
+      else if (target.classList.contains('coros-calendar-nav')) {
+        handleCalendarNavigation(target.dataset.action);
+      }
+      // Collapse button
+      else if (target.id === 'coros-calendar-collapse-btn') {
+        handleCollapseToggle();
       }
     });
 
@@ -211,20 +219,6 @@
     document.addEventListener('change', (e) => {
       if (e.target.id === 'coros-view-mode') {
         handleViewModeChange(e.target.value);
-      }
-    });
-
-    // Collapse button
-    document.addEventListener('click', (e) => {
-      if (e.target.id === 'coros-calendar-collapse-btn') {
-        handleCollapseToggle();
-      }
-    });
-
-    // Refresh button
-    document.addEventListener('click', (e) => {
-      if (e.target.id === 'coros-refresh-btn') {
-        handleRefreshData();
       }
     });
   }
@@ -257,6 +251,7 @@
     }
 
     extensionState.currentDate = currentDate;
+    console.log('loadMonthData 1')
     loadMonthData(currentDate.getFullYear(), currentDate.getMonth());
 
     // Set the date range inputs (begin and end of month)
@@ -359,45 +354,49 @@
 
   // Refresh data for the current month
   async function handleRefreshData() {
+    // Immediately show loading indicator for better UX
+    setLoadingState(true);
     const currentDate = extensionState.currentDate;
-    const monthKey = getMonthKey(currentDate);
 
-    // Clear cache for the current month
-    await window.CorosStorage.saveActivities(monthKey, null);
-
-    // Reload data for the current month
-    await loadMonthData(currentDate.getFullYear(), currentDate.getMonth());
+    console.log('loadMonthData 2')
+    await loadMonthData(currentDate.getFullYear(), currentDate.getMonth(), true);
   }
 
   // Load initial data
   async function loadInitialData() {
     const currentDate = new Date();
+    
+    console.log('loadMonthData 3')
     await loadMonthData(currentDate.getFullYear(), currentDate.getMonth());
   }
 
   // Load data for a specific month
-  async function loadMonthData(year, month) {
+  async function loadMonthData(year, month, forceRefresh = false) {
     const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+    const isCurrentMonth = (year === new Date().getFullYear()) && (month === new Date().getMonth());
 
+    console.log({
+      n: "loadMonthData",
+      year: year,
+      month: month,
+      forceRefresh: forceRefresh
+    })
     try {
       setLoadingState(true);
 
-      // Check if we need to fetch fresh data (current month) or can use cache
-      const isCurrentMonth = (year === new Date().getFullYear()) &&
-        (month === new Date().getMonth());
-
       let activities;
-      if (isCurrentMonth) {
-        // Always fetch fresh data for current month
+      // Only check cache if we are NOT forcing a refresh AND it's NOT the current month.
+      if (!forceRefresh && !isCurrentMonth) {
+        activities = await window.CorosStorage.getActivities(monthKey);
+      }
+
+      // Fetch if we have a reason to:
+      // 1. Manual refresh was triggered (`forceRefresh`).
+      // 2. It's the current month, which should always be fresh (`isCurrentMonth`).
+      // 3. It's a past month that wasn't in the cache (`activities` is null/undefined).
+      if (forceRefresh || isCurrentMonth || activities === null || typeof activities === 'undefined') {
         activities = await window.CorosAPI.fetchActivitiesForMonth(year, month);
         await window.CorosStorage.saveActivities(monthKey, activities);
-      } else {
-        // Try cache first for historical data
-        activities = await window.CorosStorage.getActivities(monthKey);
-        if (!activities || activities.length === 0) {
-          activities = await window.CorosAPI.fetchActivitiesForMonth(year, month);
-          await window.CorosStorage.saveActivities(monthKey, activities);
-        }
       }
 
       // Store in state

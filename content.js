@@ -220,6 +220,13 @@
         handleCollapseToggle();
       }
     });
+
+    // Refresh button
+    document.addEventListener('click', (e) => {
+      if (e.target.id === 'coros-refresh-btn') {
+        handleRefreshData();
+      }
+    });
   }
 
   // Handle tab switching between calendar and statistics
@@ -295,6 +302,7 @@
           <button class="coros-calendar-nav" data-action="next">Next ›</button>
         </div>
         <div class="coros-view-controls">
+          <button id="coros-refresh-btn" class="coros-calendar-nav">🔄</button>
           <select id="coros-view-mode">
             <option value="month" ${viewMode === 'month' ? 'selected' : ''}>Month View</option>
             <option value="week" ${viewMode === 'week' ? 'selected' : ''}>Week View</option>
@@ -347,6 +355,18 @@
         currentDate
       );
     }
+  }
+
+  // Refresh data for the current month
+  async function handleRefreshData() {
+    const currentDate = extensionState.currentDate;
+    const monthKey = getMonthKey(currentDate);
+
+    // Clear cache for the current month
+    await window.CorosStorage.saveActivities(monthKey, null);
+
+    // Reload data for the current month
+    await loadMonthData(currentDate.getFullYear(), currentDate.getMonth());
   }
 
   // Load initial data

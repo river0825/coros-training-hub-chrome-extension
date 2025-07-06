@@ -69,7 +69,7 @@ window.CorosStorage = (function () {
                 storedData = await chromeStorageGet(storageKey);
             } else {
                 const rawData = localStorage.getItem(storageKey);
-                storedData = r1awData ? JSON.parse(rawData) : null;
+                storedData = rawData ? JSON.parse(rawData) : null;
             }
 
             if (!storedData) {

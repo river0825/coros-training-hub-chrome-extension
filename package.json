@@ -1,0 +1,35 @@
+{
+  "name": "coros-training-hub-chrome-extension",
+  "version": "1.0.0",
+  "description": "A Chrome extension for training and COROS integration, built with TypeScript.",
+  "main": "dist/background.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development",
+    "watch": "webpack --mode development --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome-extension",
+    "typescript",
+    "coros",
+    "training",
+    "calendar",
+    "sports"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.1.1",
+    "@types/jquery": "^3.5.32",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.8.3",
+    "webpack": "^5.100.2",
+    "webpack-cli": "^6.0.1"
+  }
+}

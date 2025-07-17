@@ -11,7 +11,7 @@
     "https://t.coros.com/"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "dist/background.js"
   },
   "content_scripts": [
     {
@@ -20,7 +20,7 @@
       ],
       "js": [
         "jquery.min.js",
-        "content.js"
+        "dist/content.js"
       ]
     }
   ],

@@ -11,9 +11,11 @@ yarn-error.log*
 Thumbs.db
 # Coverage
 coverage/
-# Build
+# Build (keep dist/ for Chrome extension)
 build/
-dist/
 # Chrome Extension
 *.crx
 *.zip
+# TypeScript
+src/**/*.js
+src/**/*.map

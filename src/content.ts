@@ -1,16 +1,84 @@
-// content.js
+// content.ts
 // Extract activity data (date, sport type, distance, time) from COROS API
 
-(async function extractActivitiesFromAPI() {
+// Type definitions for the project
+interface CorosActivity {
+  date: string;
+  sportType: number;
+  sport: string;
+  distance: number;
+  time: string | number;
+}
+
+interface CorosActivityRaw {
+  date: number;
+  sportType: number;
+  distance: number;
+  totalTime: number;
+}
+
+interface CorosApiResponse {
+  data?: {
+    dataList?: CorosActivityRaw[];
+  };
+}
+
+interface ActivityForCalendar extends CorosActivity {
+  dateObj: Date;
+  type: string;
+  sportCode: number;
+}
+
+interface ActivityMap {
+  [date: string]: ActivityForCalendar[];
+}
+
+interface SportReport {
+  distance: number;
+  time: number;
+  count: number;
+  type?: string;
+}
+
+interface Report {
+  [sportCode: string]: SportReport;
+}
+
+interface GroupSummary {
+  run: SportReport;
+  bike: SportReport;
+  swim: SportReport;
+}
+
+interface SportIconEntry {
+  icon: string;
+  sumSport?: number;
+  dataSport: number | string;
+  color: string;
+}
+
+interface SportIconMap {
+  [key: string]: SportIconEntry;
+}
+
+// Extend Window interface to include corosActivities
+declare global {
+  interface Window {
+    corosActivities: CorosActivity[];
+    $?: typeof jQuery;
+  }
+}
+
+(async function extractActivitiesFromAPI(): Promise<void> {
   // Replace with dynamic token/cookie retrieval if needed
   const accesstoken = (() => {
     // Try to get from cookies
     const match = document.cookie.match(/CPL-coros-token=([^;]+)/);
     const token = match ? match[1] : '';
     if (token) {
-      console.debug('[content.js] COROS accesstoken found in cookies.');
+      console.debug('[content.ts] COROS accesstoken found in cookies.');
     } else {
-      console.debug('[content.js] COROS accesstoken NOT found in cookies.');
+      console.debug('[content.ts] COROS accesstoken NOT found in cookies.');
     }
     return token;
   })();
@@ -24,7 +92,7 @@
   const url = 'https://teamapi.coros.com/activity/query?size=100&pageNumber=1&modeList=';
 
   try {
-    console.debug('[content.js] Fetching activities from COROS API:', url);
+    console.debug('[content.ts] Fetching activities from COROS API:', url);
     const res = await fetch(url, {
       method: 'GET',
       headers: {
@@ -35,20 +103,20 @@
     });
 
     if (!res.ok) throw new Error('API request failed');
-    const json = await res.json();
-    console.debug('[content.js] Raw API response:', json);
+    const json: CorosApiResponse = await res.json();
+    console.debug('[content.ts] Raw API response:', json);
     const dataList = json?.data?.dataList || [];
-    console.debug('[content.js] Extracted dataList:', dataList);
+    console.debug('[content.ts] Extracted dataList:', dataList);
 
     // Helper to format date as YYYY-MM-DD
-    function formatDate(num) {
+    function formatDate(num: number): string {
       if (!num) return '';
       const s = num.toString();
       return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
     }
 
     // Helper to format seconds as HH:MM:SS
-    function formatTime(sec) {
+    function formatTime(sec: number): string {
       if (typeof sec !== 'number' || isNaN(sec)) return '';
       const h = Math.floor(sec / 3600);
       const m = Math.floor((sec % 3600) / 60);
@@ -57,8 +125,8 @@
     }
 
     // Map sportType to sport string (customize as needed)
-    function mapSport(sportType) {
-      const map = {
+    function mapSport(sportType: number): string {
+      const map: { [key: number]: string } = {
         100: 'run',
         103: 'track',
         300: 'swim',
@@ -73,7 +141,7 @@
       return map[sportType] || 'other';
     }
 
-    const activities = dataList.map(item => ({
+    const activities: CorosActivity[] = dataList.map(item => ({
       date: formatDate(item.date),
       sportType: item.sportType,
       sport: mapSport(item.sportType),
@@ -81,16 +149,17 @@
       time: item.totalTime,
     }));
 
-    console.debug('[content.js] Final extracted activities:', activities);
+    console.debug('[content.ts] Final extracted activities:', activities);
     window.corosActivities = activities;
   } catch (e) {
-    console.error('[content.js] Failed to fetch activities:', e);
+    console.error('[content.ts] Failed to fetch activities:', e);
     window.corosActivities = [];
   }
 })();
+
 // === Inject "日曆總覽" Tab and Calendar UI ===
-(function injectCalendarTab() {
-  function waitForTabBarAndInject() {
+(function injectCalendarTab(): void {
+  function waitForTabBarAndInject(): void {
     // Try to find the tab bar containing "活動列表"
     const tabSelector = 'div,nav,ul';
     const tabText = '活動列表';
@@ -115,16 +184,18 @@
     if (tabBar.querySelector('.coros-calendar-tab')) return;
 
     // Clone the style of the existing tab
-    const calendarTab = activityTab.cloneNode(true);
+    const calendarTab = activityTab.cloneNode(true) as HTMLElement;
     calendarTab.textContent = '日曆總覽';
     calendarTab.classList.add('coros-calendar-tab');
     calendarTab.style.cursor = 'pointer';
 
     // Insert the new tab after "活動列表"
-    activityTab.parentNode.insertBefore(calendarTab, activityTab.nextSibling);
+    if (activityTab.parentNode) {
+      activityTab.parentNode.insertBefore(calendarTab, activityTab.nextSibling);
+    }
 
     // Calendar container
-    let calendarContainer = document.createElement('div');
+    const calendarContainer = document.createElement('div');
     calendarContainer.className = 'coros-calendar-container';
     calendarContainer.style.display = 'none';
     calendarContainer.style.padding = '24px';
@@ -218,29 +289,38 @@
 
     // Insert calendar container after the activities list container
     // Try to find the activities list container (assume it's a sibling of tabBar or nearby)
-    let activitiesList = tabBar.parentNode.querySelector('div,section,main');
-    if (!activitiesList) activitiesList = tabBar.parentNode;
-    activitiesList.parentNode.insertBefore(calendarContainer, activitiesList.nextSibling);
+    let activitiesList = tabBar.parentNode?.querySelector('div,section,main') as HTMLElement;
+    if (!activitiesList) activitiesList = tabBar.parentNode as HTMLElement;
+    if (activitiesList.parentNode) {
+      activitiesList.parentNode.insertBefore(calendarContainer, activitiesList.nextSibling);
+    }
 
     // Tab switching logic
-    function setActiveTab(tab) {
+    function setActiveTab(tab: HTMLElement): void {
       // Remove active class from all tabs
-      Array.from(tabBar.children).forEach(child => {
-        child.classList && child.classList.remove('active');
-      });
+      if (tabBar) {
+        Array.from(tabBar.children).forEach(child => {
+          const childElement = child as HTMLElement;
+          childElement.classList?.remove('active');
+        });
+      }
       calendarTab.classList.remove('active');
-      activityTab.classList.remove('active');
+      if (activityTab) {
+        activityTab.classList.remove('active');
+      }
       tab.classList.add('active');
     }
 
-
     // Track displayed year/month as state
-    let displayedYear, displayedMonth;
-    function setDisplayedMonthYear(y, m) {
+    let displayedYear: number | undefined;
+    let displayedMonth: number | undefined;
+
+    function setDisplayedMonthYear(y: number, m: number): void {
       displayedYear = y;
       displayedMonth = m;
     }
-    function getDisplayedMonthYear() {
+
+    function getDisplayedMonthYear(): { year: number; month: number } {
       if (typeof displayedYear === 'number' && typeof displayedMonth === 'number') {
         return { year: displayedYear, month: displayedMonth };
       } else {
@@ -260,15 +340,19 @@
       }
     }
 
-    function showCalendarTab(forceYear, forceMonth) {
+    function showCalendarTab(forceYear?: number, forceMonth?: number): void {
       setActiveTab(calendarTab);
       if (activitiesList) activitiesList.style.display = 'none';
       calendarContainer.style.display = '';
+      
       // Populate calendar summary with calendar grid and monthly report
-      const summaryDiv = calendarContainer.querySelector('#coros-calendar-summary');
+      const summaryDiv = calendarContainer.querySelector('#coros-calendar-summary') as HTMLElement;
+      if (!summaryDiv) return;
+      
       summaryDiv.innerHTML = '';
+      
       if (window.corosActivities && Array.isArray(window.corosActivities)) {
-        const activities = window.corosActivities.map(a => ({
+        const activities: ActivityForCalendar[] = window.corosActivities.map(a => ({
           ...a,
           dateObj: new Date(a.date),
           type: a.sport || '其他',
@@ -276,7 +360,8 @@
         }));
 
         // Get current month/year (default: today or state)
-        let year, month;
+        let year: number;
+        let month: number;
         if (typeof forceYear === 'number' && typeof forceMonth === 'number') {
           year = forceYear;
           month = forceMonth;
@@ -288,7 +373,7 @@
         setDisplayedMonthYear(year, month);
 
         // Group activities by date
-        const activityMap = {};
+        const activityMap: ActivityMap = {};
         activities.forEach(a => {
           const d = a.dateObj.toISOString().slice(0, 10);
           if (!activityMap[d]) activityMap[d] = [];
@@ -298,7 +383,7 @@
         // Sport icon mapping (emoji fallback)
         // Map sport types to COROS iconfont class names
         // Mapping from sportType to icon class, data-sport, and color
-        const sportIconMap = {
+        const sportIconMap: SportIconMap = {
           100: { icon: 'icon-outrun', sumSport: 100, dataSport: 100, color: 'rgb(248, 192, 50)' },   // 跑步
           103: { icon: 'icon-groundrun', sumSport: 100, dataSport: 103, color: 'rgb(255, 99, 132)' },   // 田徑
           200: { icon: 'icon-cycle', sumSport: 200, dataSport: 200, color: 'rgb(75, 192, 192)' },   // 自行車
@@ -312,34 +397,35 @@
           other: { icon: 'icon-other', dataSport: '', color: 'rgb(200,200,200)' }
         };
 
-        function getSportIcon(sportType) {
+        function getSportIcon(sportType: number | string): string {
           const entry = sportIconMap[sportType] || sportIconMap['other'];
 
-          console.log('[content.js] getSportIcon called with:', sportType);
-          console.debug('[content.js] getSportIcon entry:', entry);
-          // icon=<span class="arco-table-cell arco-table-cell-align-left"><!----><!----><span class="arco-table-td-content"><div data-v-16496a7c="" class="flex-1 flex"><span data-v-16496a7c="" class="iconfont-sport iconfont-sport icon-outrun text-20" data-sport="100" style="color: rgb(248, 192, 50);"></span></div></span></span>
-          icon = `<span class="arco-table-cell arco-table-cell-align-left"><!----><!----><span class="arco-table-td-content"><div data-v-16496a7c="" class="flex-1 flex"><span data-v-16496a7c="" class="iconfont-sport iconfont-sport ${entry.icon} text-20" data-sport="${entry.dataSport}" style="color: ${entry.color};"></span></div></span></span>`;
+          console.log('[content.ts] getSportIcon called with:', sportType);
+          console.debug('[content.ts] getSportIcon entry:', entry);
+          
+          const icon = `<span class="arco-table-cell arco-table-cell-align-left"><!----><!----><span class="arco-table-td-content"><div data-v-16496a7c="" class="flex-1 flex"><span data-v-16496a7c="" class="iconfont-sport iconfont-sport ${entry.icon} text-20" data-sport="${entry.dataSport}" style="color: ${entry.color};"></span></div></span></span>`;
           return icon;
         }
 
         // Calendar grid logic
-        function getDaysInMonth(y, m) {
+        function getDaysInMonth(y: number, m: number): number {
           return new Date(y, m + 1, 0).getDate();
         }
-        function getFirstDayOfWeek(y, m) {
+        
+        function getFirstDayOfWeek(y: number, m: number): number {
           return new Date(y, m, 1).getDay();
         }
+        
         const daysInMonth = getDaysInMonth(year, month);
         const firstDay = getFirstDayOfWeek(year, month);
 
-
         // Month names for display
         const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        monthNavigator = `<div class="arco-btn-group mx-16">
+        const monthNavigator = `<div class="arco-btn-group mx-16">
   <button id="monthPrevBtn" class="arco-btn arco-btn-secondary arco-btn-shape-square arco-btn-size-medium arco-btn-status-normal" type="button"><span class="iconfont iconxiangzuo text-14"></span></button>
   <h2 id="currentMonth" class="text-2xl font-semibold mx-4">${monthNames[month]} ${year}</h2>
   <button id="monthNextBtn" class="arco-btn arco-btn-secondary arco-btn-shape-square arco-btn-size-medium arco-btn-status-normal" type="button"><span class="iconfont iconxiangyou text-14"></span></button>
-</div>`
+</div>`;
 
         // Render day headers
         const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
@@ -360,18 +446,21 @@
           const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
           const isToday = (today.getDate() === d && today.getMonth() === month && today.getFullYear() === year);
           gridHtml += `<div class="coros-calendar-cell${isToday ? ' today' : ''}"><div style="font-weight:bold">${d}</div>`;
+          
           if (activityMap[dateStr]) {
             // Group by type
-            const typeGroups = {};
+            const typeGroups: { [type: string]: ActivityForCalendar[] } = {};
             activityMap[dateStr].forEach(act => {
               if (!typeGroups[act.type]) typeGroups[act.type] = [];
               typeGroups[act.type].push(act);
             });
+            
             Object.keys(typeGroups).forEach(type => {
               const acts = typeGroups[type];
               const totalDist = acts.reduce((sum, a) => sum + (a.distance || 0), 0).toFixed(2);
+              
               // Parse a.totalTime if it's a string in HH:MM:SS format
-              function parseTimeToSeconds(t) {
+              function parseTimeToSeconds(t: string | number): number {
                 if (typeof t === 'number') return t;
                 if (typeof t === 'string' && t.includes(':')) {
                   const parts = t.split(':').map(Number);
@@ -383,10 +472,11 @@
                 }
                 return 0;
               }
+              
               const totalTime = acts.reduce((sum, a) => sum + parseTimeToSeconds(a.time || 0), 0);
               // Find sportType from acts[0] for correct icon rendering
               const sportTypeValue = acts[0]?.sportType || acts[0]?.type || 'other';
-              console.debug('[content.js] Rendering activity:', type, 'with sportType:', sportTypeValue);
+              console.debug('[content.ts] Rendering activity:', type, 'with sportType:', sportTypeValue);
               gridHtml += `<div class="coros-activity"><span class="coros-activity-icon">${getSportIcon(sportTypeValue)}</span>${type}<span style="margin-left:4px;color:#aaa;">${totalDist}km</span></div>`;
             });
           }
@@ -395,14 +485,15 @@
         gridHtml += '</div>';
 
         // Monthly report
-        const report = {};
+        const report: Report = {};
         // Summary by group: run, bike, swim
-        const groupSummary = {
+        const groupSummary: GroupSummary = {
           run: { distance: 0, time: 0, count: 0 },
           bike: { distance: 0, time: 0, count: 0 },
           swim: { distance: 0, time: 0, count: 0 }
         };
-        function parseTimeToSeconds(t) {
+        
+        function parseTimeToSeconds(t: string | number): number {
           if (typeof t === 'number') return t;
           if (typeof t === 'string' && t.includes(':')) {
             const parts = t.split(':').map(Number);
@@ -414,14 +505,18 @@
           }
           return 0;
         }
+        
         activities.forEach(a => {
           // only include activities for the displayed month
           if (a.dateObj.getFullYear() !== year || a.dateObj.getMonth() !== month) return;
-          if (!report[a.sportCode]) report[a.sportCode] = { distance: 0, time: 0, count: 0 };
-          report[a.sportCode].distance += a.distance || 0;
-          report[a.sportCode].time += parseTimeToSeconds(a.time || 0);
-          report[a.sportCode].count += 1;
-          report[a.sportCode].type = a.type;
+          
+          const sportCodeStr = a.sportCode.toString();
+          if (!report[sportCodeStr]) report[sportCodeStr] = { distance: 0, time: 0, count: 0 };
+          report[sportCodeStr].distance += a.distance || 0;
+          report[sportCodeStr].time += parseTimeToSeconds(a.time || 0);
+          report[sportCodeStr].count += 1;
+          report[sportCodeStr].type = a.type;
+          
           // Group summary
           const code = Number(a.sportCode);
           if (code >= 100 && code < 200) {
@@ -438,15 +533,17 @@
             groupSummary.swim.count += 1;
           }
         });
-        function formatTime(sec) {
+        
+        function formatTime(sec: number): string {
           if (!sec) return '0:00:00';
           const h = Math.floor(sec / 3600);
           const m = Math.floor((sec % 3600) / 60);
           const s = sec % 60;
           return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
         }
+        
         // Group summary HTML
-        let groupSummaryHtml = `
+        const groupSummaryHtml = `
         <table class="coros-calendar-report-table" style="margin-bottom:12px;">
           <tr>
             <td>${getSportIcon(100)}</td>
@@ -465,17 +562,18 @@
         reportHtml += '<table class="coros-calendar-report-table"><thead><tr><th></th><th>運動類型</th><th>次數</th><th>總距離 (km)</th><th>總時間</th></tr></thead><tbody>';
 
         Object.keys(report).forEach(code => {
-          type = report[code].type || '其他';
-          const tdClass = `class="arco-table-td arco-table-col-fixed-left td-Sport_Image"`
+          const type = report[code].type || '其他';
+          const tdClass = `class="arco-table-td arco-table-col-fixed-left td-Sport_Image"`;
           reportHtml += `<tr><td ${tdClass}>${getSportIcon(code)}</td><td> ${type} - ${code}</td><td>${report[code].count}</td><td>${report[code].distance.toFixed(2)}</td><td>${formatTime(report[code].time)}</td></tr>`;
         });
         reportHtml += '</tbody></table></div>';
 
         summaryDiv.innerHTML = monthNavigator + reportHtml + gridHtml;
+        
         // Attach jQuery click handlers for month navigation
         if (window.$) {
           console.debug('[monthNavigator] jQuery detected, attaching handlers');
-          $('#monthPrevBtn').off('click').on('click', function () {
+          window.$('#monthPrevBtn').off('click').on('click', function () {
             console.debug('[monthNavigator] Prev button clicked', { year, month });
             let newMonth = month - 1;
             let newYear = year;
@@ -486,7 +584,7 @@
             console.debug('[monthNavigator] Navigating to', { newYear, newMonth });
             showCalendarTab(newYear, newMonth);
           });
-          $('#monthNextBtn').off('click').on('click', function () {
+          window.$('#monthNextBtn').off('click').on('click', function () {
             console.debug('[monthNavigator] Next button clicked', { year, month });
             let newMonth = month + 1;
             let newYear = year;
@@ -505,14 +603,18 @@
       }
     }
 
-    function showActivityTab() {
-      setActiveTab(activityTab);
+    function showActivityTab(): void {
+      if (activityTab) {
+        setActiveTab(activityTab as HTMLElement);
+      }
       if (activitiesList) activitiesList.style.display = '';
       calendarContainer.style.display = 'none';
     }
 
-    calendarTab.addEventListener('click', showCalendarTab);
-    activityTab.addEventListener('click', showActivityTab);
+    calendarTab.addEventListener('click', () => showCalendarTab());
+    if (activityTab) {
+      activityTab.addEventListener('click', showActivityTab);
+    }
 
     // Ensure correct tab is shown on load
     showActivityTab();
@@ -520,11 +622,13 @@
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
-      console.debug('[content.js] DOMContentLoaded fired, window.$:', typeof window.$, window.$ ? 'exists' : 'not found');
+      console.debug('[content.ts] DOMContentLoaded fired, window.$:', typeof window.$, window.$ ? 'exists' : 'not found');
       waitForTabBarAndInject();
     });
   } else {
-    console.debug('[content.js] Document already loaded, window.$:', typeof window.$, window.$ ? 'exists' : 'not found');
+    console.debug('[content.ts] Document already loaded, window.$:', typeof window.$, window.$ ? 'exists' : 'not found');
     waitForTabBarAndInject();
   }
 })();
+
+export {};

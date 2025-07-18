@@ -22,7 +22,7 @@ export interface ActivityViewModel {
   distance: string;
   startTime: string;
   calories: string;
-  pace?: string;
+  pace?: string | undefined;
 }
 
 export interface SportTypeViewModel {

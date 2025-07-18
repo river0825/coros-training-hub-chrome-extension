@@ -6,7 +6,9 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "contextMenus",
+    "cookies"
   ],
   "host_permissions": [
     "https://t.coros.com/*",
@@ -21,15 +23,12 @@
         "https://t.coros.com/*"
       ],
       "js": [
-        "storage.js",
-        "api.js",
-        "calendar.js",
-        "statistics.js",
         "content.js"
       ],
       "css": [
-        "styles.css"
-      ]
+        "content.css"
+      ],
+      "run_at": "document_end"
     }
   ],
   "action": {
@@ -40,11 +39,17 @@
     {
       "resources": [
         "*.js",
-        "*.css"
+        "*.css",
+        "*.html"
       ],
       "matches": [
         "https://t.coros.com/*"
       ]
     }
-  ]
+  ],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
 }

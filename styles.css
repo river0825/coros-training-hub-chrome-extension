@@ -1,0 +1,494 @@
+:root {
+  /* Color Palette from STYLE_GUIDE.md */
+  --c-background-primary: #0f1528;
+  --c-background-card: #181e30;
+  --c-background-inset: #161b2b;
+  --c-accent-primary: #00b3ff;
+  --c-accent-secondary: #f8283b;
+  --c-text-primary: #ffffff;
+  --c-text-secondary: rgba(255, 255, 255, 0.6);
+  --c-text-muted: rgba(255, 255, 255, 0.4);
+  --c-border-primary: rgba(255, 255, 255, 0.1);
+  --c-border-secondary: rgba(255, 255, 255, 0.05);
+
+  /* Sizing and Spacing from STYLE_GUIDE.md */
+  --spacing-unit: 4px;
+  --border-radius-sm: 2px;
+  --border-radius-md: 4px;
+}
+
+/* Global Styles */
+html, body {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* COROS Calendar Extension Styles */
+
+/* Main extension container */
+.coros-extension-container {
+    background: var(--c-background-primary);
+    border: 1px solid var(--c-border-secondary);
+    border-radius: var(--border-radius-md);
+    margin: 0px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    color: var(--c-text-primary);
+    position: relative;
+  }
+  
+  /* Dark theme support */
+  
+  /* Tab navigation */
+  .coros-extension-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--c-border-primary);
+    background: var(--c-background-card);
+  }
+  
+  .coros-tab-btn {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--c-text-secondary);
+    transition: all 0.2s ease;
+    border-bottom: 3px solid transparent;
+  }
+  
+  .coros-tab-btn:hover {
+    background: var(--c-background-primary);
+    color: var(--c-text-primary);
+  }
+  
+  .coros-tab-btn.active {
+    background: var(--c-background-primary);
+    color: var(--c-accent-primary);
+    border-bottom-color: var(--c-accent-primary);
+  }
+  
+  /* Content container */
+  .coros-extension-content {
+    padding: 20px;
+    min-height: 400px;
+  }
+  
+  /* Loading state */
+  .coros-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 21, 40, 0.9);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  
+  .coros-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--c-border-primary);
+    border-top: 4px solid var(--c-accent-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: calc(var(--spacing-unit) * 2.5);
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Calendar header */
+  .coros-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .coros-calendar-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .coros-calendar-title {
+    margin: 0;
+    font-size: 20px; /* H1 equivalent */
+    font-weight: 500;
+    color: var(--c-text-primary);
+  }
+  
+  .coros-calendar-nav {
+    padding: 8px 12px;
+    border: 1px solid var(--c-border-primary);
+    background: var(--c-background-primary);
+    color: var(--c-text-primary);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+  }
+  
+  .coros-calendar-nav:hover {
+    background: var(--c-accent-primary);
+    color: white; /* Style guide doesn't specify text color on hover, assuming white for now */
+    border-color: var(--c-accent-primary);
+  }
+  
+  .coros-view-controls select {
+    padding: 8px 12px;
+    border: 1px solid var(--c-border-primary);
+    background: var(--c-background-primary);
+    color: var(--c-text-primary);
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+  }
+  
+  /* Calendar grid */
+  .coros-calendar-grid {
+    background: var(--c-background-primary);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    border: 1px solid var(--c-border-secondary);
+  }
+  
+  .coros-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background: var(--c-background-card);
+  }
+  
+  .coros-weekday {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--c-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .coros-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+  
+  .coros-calendar-day {
+    min-height: 80px;
+    padding: 8px 4px 8px 4px;
+    border-right: 1px solid var(--c-border-secondary);
+    border-bottom: 1px solid var(--c-border-secondary);
+    position: relative;
+    background: var(--c-background-primary);
+    transition: background-color 0.2s ease;
+    vertical-align: top;
+    overflow: visible;
+  }
+  
+  .coros-calendar-day:hover {
+    background: var(--c-background-card);
+  }
+  
+  .coros-calendar-day.other-month {
+    color: var(--c-text-secondary); /* Muted text for other month days might be better, but style guide says secondary text. */
+    background: var(--c-background-card);
+  }
+  
+  .coros-calendar-day.today {
+    background: rgba(0, 122, 255, 0.1);
+  }
+  
+  .coros-day-number {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--c-text-secondary);
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 2;
+    background: transparent;
+    pointer-events: none;
+    letter-spacing: 0.2px;
+  }
+  
+  .coros-day-activities {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 32px;
+    margin-top: 26px; /* Add space for the day number */
+    /* Remove max-height and overflow to allow expansion */
+  }
+  
+  .coros-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0px;
+    padding: 2px 2px; /* Vertical padding of 12px (spacing-unit * 3) */
+    border-radius: var(--border-radius-md);
+    font-size: 12px; /* Keep 12px as it's for activity items, not base font size */
+    line-height: 1.6;
+    background: var(--c-background-card);
+    color: var(--c-text-primary);
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.07);
+    border: 1px solid var(--coros-border, #e0e0e0);
+    margin-bottom: 0px;
+    transition: box-shadow 0.2s;
+  }
+  .coros-activity-item:last-child {
+    margin-bottom: 0;
+  }
+  
+  .coros-activity-icon {
+    font-size: 16px; /* Recommended icon size */
+  }
+  
+  .coros-activity-more {
+    font-size: 10px;
+    color: var(--c-text-secondary);
+    text-align: center;
+    margin-top: 2px;
+  }
+  
+  /* Statistics styles */
+  .coros-statistics-header {
+    margin-bottom: 20px;
+  }
+  
+  .coros-statistics-content {
+    display: grid;
+    gap: 20px;
+  }
+  
+  .coros-stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+  }
+  
+  .coros-stat-card {
+    background: var(--c-background-card);
+    padding: 5px;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--c-border-secondary);
+    text-align: center;
+  }
+  
+  .coros-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--c-accent-primary);
+    margin-bottom: 5px;
+  }
+  
+  .coros-stat-label {
+    font-size: 14px;
+    color: var(--c-text-secondary);
+    font-weight: 500;
+  }
+  
+  .coros-stats-by-sport {
+    background: var(--c-background-primary);
+    border: 1px solid var(--c-border-primary);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+  }
+  
+  .coros-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .coros-stats-table th {
+    background: var(--c-background-card);
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--c-text-primary);
+    border-bottom: 1px solid var(--c-border-primary);
+  }
+  
+  .coros-stats-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--c-border-primary);
+    font-size: 14px;
+  }
+  
+  .coros-sport-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  
+  .coros-sport-icon {
+    font-size: 16px;
+  }
+  
+  /* Error state */
+  .coros-error-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--c-text-secondary);
+  }
+  
+  .coros-error-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+  }
+  
+  .coros-error-state h3 {
+    margin: 0 0 10px 0;
+    color: var(--c-text-primary);
+    font-size: 18px; /* H2 equivalent */
+    font-weight: 500;
+  }
+  
+  .coros-error-state p {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+  }
+  
+  .coros-retry-btn {
+    padding: 10px 20px;
+    background: var(--c-accent-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+  
+  .coros-retry-btn:hover {
+    filter: brightness(1.1); /* Lighten slightly on hover for primary accent */
+  }
+  
+  /* Week view specific styles */
+  .coros-calendar-grid.week-view .coros-calendar-days {
+    grid-template-columns: repeat(7, 1fr);
+  }
+  
+  .coros-calendar-grid.week-view .coros-calendar-day {
+    min-height: 120px;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .coros-extension-content {
+      padding: 15px;
+    }
+    
+    .coros-calendar-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .coros-calendar-controls {
+      justify-content: center;
+    }
+    
+    .coros-stats-summary {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+    
+    .coros-calendar-day {
+      min-height: 60px;
+    }
+    
+    .coros-stats-table {
+      font-size: 12px;
+    }
+    
+    .coros-stats-table th,
+    .coros-stats-table td {
+      padding: 8px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .coros-extension-tabs {
+      flex-direction: column;
+    }
+    
+    .coros-tab-btn {
+      border-bottom: 1px solid var(--c-border-primary);
+      border-left: 3px solid transparent;
+    }
+    
+    .coros-tab-btn.active {
+      border-left-color: var(--c-accent-primary);
+      border-bottom-color: var(--c-border-primary);
+    }
+    
+    .coros-stats-summary {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .coros-extension-container {
+      border-width: 2px;
+    }
+    
+    .coros-calendar-day {
+      border-width: 2px;
+    }
+    
+    .coros-tab-btn.active {
+      border-bottom-width: 4px;
+    }
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .coros-tab-btn,
+    .coros-calendar-nav,
+    .coros-calendar-day,
+    .coros-retry-btn {
+      transition: none;
+    }
+    
+    .coros-spinner {
+      animation: none;
+    }
+  }
+
+.coros-extension-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--c-background-inset); /* Use inset background for header */
+  border-bottom: 1px solid var(--c-border-primary);
+}
+
+.coros-collapse-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 5px;
+  line-height: 1;
+}
+
+.coros-extension-container.collapsed  {
+  display: none;
+}
+  

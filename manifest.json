@@ -1,14 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "COROS Training Hub Calendar Summary",
-  "version": "0.1.0",
-  "description": "Summarizes COROS activities in a calendar popup.",
+  "name": "COROS Activity Calendar",
+  "version": "1.1.0",
+  "description": "Enhance COROS website with calendar visualization and statistics for sports activity data",
   "permissions": [
+    "activeTab",
     "scripting",
-    "activeTab"
+    "storage"
   ],
   "host_permissions": [
-    "https://t.coros.com/"
+    "https://t.coros.com/*",
+    "https://teamapi.coros.com/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -19,27 +21,30 @@
         "https://t.coros.com/*"
       ],
       "js": [
-        "jquery.min.js",
+        "storage.js",
+        "api.js",
+        "calendar.js",
+        "statistics.js",
         "content.js"
+      ],
+      "css": [
+        "styles.css"
       ]
     }
   ],
   "action": {
-    "default_popup": "popup/popup.html",
-    "_default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+    "default_popup": "popup.html",
+    "default_title": "COROS Activity Calendar"
   },
-  "privacy_practices": {
-    "single_purpose": "本擴充功能僅用於協助使用者在 COROS 官網上視覺化個人運動活動資料，提供日曆總覽與統計報表，無其他用途。",
-    "permissions": {
-      "activeTab": "需要此權限以便在使用者主動開啟 COROS 官網分頁時，於該分頁注入日曆總覽 UI，僅在使用者互動時作用，不會主動存取其他分頁內容。",
-      "scripting": "需要此權限以便在 COROS 官網頁面動態注入與執行內容腳本，實現日曆 UI 與資料視覺化功能，確保功能正常運作。",
-      "remote_code": "本擴充功能僅載入官方 COROS API 所提供的活動資料，並不會從其他來源載入或執行未經授權的遠端程式碼。若需載入遠端程式碼，僅限於官方 API 回應內容，確保資料安全。",
-      "site_access": "需要存取 COROS 官網（如 https://team.coros.com/*）以便取得使用者的運動活動資料，並於該網站頁面上顯示日曆與統計資訊，不會存取其他網站或未經授權的資料。"
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*.js",
+        "*.css"
+      ],
+      "matches": [
+        "https://t.coros.com/*"
+      ]
     }
-  }
+  ]
 }

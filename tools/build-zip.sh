@@ -1,18 +1,29 @@
 #!/bin/zsh
 
 # Name of the output zip file
-ZIP_NAME="chrome-extension-deploy.zip"
+ZIP_FILE="dist.zip"
 
-# Remove any existing zip file
-rm -f $ZIP_NAME
+# List of files and directories to include
+INCLUDE_ITEMS=(
+  "manifest.json"
+  "background.js"
+  "content.js"
+  "storage.js"
+  "api.js"
+  "calendar.js"
+  "statistics.js"
+  "popup.html"
+  "popup.js"
+  "styles.css"
+  "jquery.min.js"
+  "LICENSE"
+  "images/"
+)
 
-# Create the zip, excluding unnecessary files/folders
-zip -r $ZIP_NAME . \
-    -x "*.git*" \
-    -x "*coverage/*" \
-    -x "*.DS_Store" \
-    -x "*.github/*" \
-    -x "$ZIP_NAME" \
-    -x "build-zip.sh"
+# Remove old zip file if exists
+rm -f "$ZIP_FILE"
 
-echo "Created $ZIP_NAME for Chrome Web Store deployment."
+# Create the zip archive including only the specified files and directories
+zip -r "$ZIP_FILE" "${INCLUDE_ITEMS[@]}"
+
+echo "Created $ZIP_FILE with the specified files and directories."

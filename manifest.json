@@ -21,15 +21,12 @@
         "https://t.coros.com/*"
       ],
       "js": [
-        "storage.js",
-        "api.js",
-        "calendar.js",
-        "statistics.js",
-        "content.js"
+        "src/content-refactored.js"
       ],
       "css": [
         "styles.css"
-      ]
+      ],
+      "type": "module"
     }
   ],
   "action": {

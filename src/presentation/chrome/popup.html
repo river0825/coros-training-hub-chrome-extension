@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COROS Activity Calendar</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="popup-container">
+        <header class="popup-header">
+            <h1>COROS Activity Calendar</h1>
+            <span id="version" class="version">v1.1.0</span>
+        </header>
+        
+        <main class="popup-main">
+            <section class="status-section">
+                <p id="status" class="status">Checking status...</p>
+            </section>
+            
+            <section class="controls-section">
+                <button id="refreshBtn" class="btn btn-primary">
+                    <span class="btn-icon">🔄</span>
+                    Refresh Extension
+                </button>
+                
+                <button id="clearCacheBtn" class="btn btn-secondary">
+                    <span class="btn-icon">🗑️</span>
+                    Clear Cache
+                </button>
+            </section>
+            
+            <section class="settings-section">
+                <h3>Settings</h3>
+                
+                <div class="setting-item">
+                    <label for="defaultView">Default View:</label>
+                    <select id="defaultView" class="setting-input">
+                        <option value="calendar">Calendar</option>
+                        <option value="statistics">Statistics</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="cacheEnabled">Enable Caching:</label>
+                    <input type="checkbox" id="cacheEnabled" class="setting-checkbox" checked>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="popup-footer">
+            <p class="footer-text">
+                <a href="https://github.com/river0825/coros-training-hub-chrome-extension" target="_blank">
+                    View on GitHub
+                </a>
+            </p>
+        </footer>
+    </div>
+    
+    <script src="popup.js"></script>
+</body>
+</html>

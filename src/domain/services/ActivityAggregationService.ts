@@ -1,6 +1,5 @@
 import { Activity } from '../entities/Activity';
 import { SportType } from '../value-objects/SportType';
-import { MonthlyStats } from '../entities/Statistics';
 import { Duration } from '../value-objects/Duration';
 import { Distance } from '../value-objects/Distance';
 import { Calories } from '../value-objects/Calories';

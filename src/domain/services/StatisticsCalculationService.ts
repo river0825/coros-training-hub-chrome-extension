@@ -1,6 +1,5 @@
 import { Activity } from '../entities/Activity';
-import { Statistics, SportStats, Insight } from '../entities/Statistics';
-import { SportType } from '../value-objects/SportType';
+import { SportStats, Insight } from '../entities/Statistics';
 import { Duration } from '../value-objects/Duration';
 import { Distance } from '../value-objects/Distance';
 import { Calories } from '../value-objects/Calories';
@@ -41,7 +40,7 @@ export interface StatisticsCalculationService {
 export class StatisticsCalculationServiceImpl implements StatisticsCalculationService {
   constructor(private readonly aggregationService: ActivityAggregationService) {}
 
-  calculateInsights(activities: Activity[], period: TimePeriod): Insight[] {
+  calculateInsights(activities: Activity[], _period: TimePeriod): Insight[] {
     const insights: Insight[] = [];
 
     if (activities.length === 0) {
@@ -81,7 +80,7 @@ export class StatisticsCalculationServiceImpl implements StatisticsCalculationSe
     return insights;
   }
 
-  calculateTrends(activities: Activity[]): Trend[] {
+  calculateTrends(_activities: Activity[]): Trend[] {
     // For now, return empty trends as we'd need historical data
     // This would be implemented with access to previous periods
     return [];

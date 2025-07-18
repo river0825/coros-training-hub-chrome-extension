@@ -9,8 +9,8 @@ export class CalendarDay {
   constructor(
     private readonly date: DateTime,
     private readonly activities: Activity[],
-    private readonly isCurrentMonth: boolean,
-    private readonly isToday: boolean
+    private readonly isCurrentMonthValue: boolean,
+    private readonly isTodayValue: boolean
   ) {}
 
   getDate(): DateTime {
@@ -22,11 +22,11 @@ export class CalendarDay {
   }
 
   isCurrentMonth(): boolean {
-    return this.isCurrentMonth;
+    return this.isCurrentMonthValue;
   }
 
   isToday(): boolean {
-    return this.isToday;
+    return this.isTodayValue;
   }
 
   hasActivities(): boolean {

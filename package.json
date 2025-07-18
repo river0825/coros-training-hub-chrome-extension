@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "COROS Activity Calendar Chrome Extension with TypeScript and Clean Architecture",
   "main": "dist/background.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc && esbuild src/presentation/chrome/*.ts --bundle --outdir=dist --platform=node --target=es2021",
     "build:watch": "tsc --watch",
